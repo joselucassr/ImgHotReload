@@ -1,5 +1,8 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 
+// Para visualizar a árvore de arquivos
+const dirTree = require('directory-tree');
+
 // Para encontrar portas não ocupadas
 const findFreePorts = require('find-free-ports').findFreePorts;
 
@@ -75,6 +78,30 @@ async function handleDirectoryOpen() {
     return;
   } else {
     console.log(filePaths);
-    return filePaths[0];
+
+    const filteredTree = dirTree(filePaths[0], {
+      extensions: /\.(jpg|jpeg|png|gif)$/,
+    });
+
+    removeEmptyFolder(filteredTree);
+
+    return filteredTree;
   }
 }
+
+// Código pego em: https://gist.github.com/g45t345rt/22a356fdba70a04932db2c37a0f9691a
+const removeEmptyFolder = (obj, parent) => {
+  const { children, name } = obj;
+  if (children) {
+    let i = children.length;
+    while (i--) {
+      const child = children[i];
+      removeEmptyFolder(child, obj);
+    }
+
+    if (children.length === 0 && parent) {
+      const index = parent.children.findIndex((child) => child.name === name);
+      parent.children.splice(index, 1);
+    }
+  }
+};

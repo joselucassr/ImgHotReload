@@ -2,8 +2,9 @@ const btn = document.getElementById('btn');
 const directoryPathElement = document.getElementById('directoryPath');
 
 btn.addEventListener('click', async () => {
-  const directoryPath = await window.electronAPI.openDirectory();
-  directoryPathElement.innerText = directoryPath;
+  const pathFileTree = await window.electronAPI.openDirectory();
+  console.log(pathFileTree);
+  // directoryPathElement.innerText = directoryPath;
 });
 
 console.log(window.electronAPI.getLocalIP);
