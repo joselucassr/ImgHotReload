@@ -129,22 +129,17 @@ const handleMonitorFile = (event, selectedFilePath) => {
 };
 
 const copyAndUpdatePublicImage = (selectedFilePath) => {
-  deleteTempFolderFiles();
-
   let dir = path.join(__dirname, 'public');
   let publicTempFolder = path.join(dir, 'temp');
 
   let filename =
     selectedFilePath.split('/')[selectedFilePath.split('/').length - 1];
 
-  let publicImgPath = path.join(publicTempFolder, filename);
+  let publicImgPath = path.join(publicTempFolder, encodeURI(filename));
 
-  fs.copyFile(selectedFilePath, publicImgPath, (err) => {
-    if (err) throw err;
-    console.log('image was copied to temp folder.');
-  });
+  fs.copyFileSync(selectedFilePath, publicImgPath);
 
-  updatePublicInfoJson('tempFileName', filename);
+  updatePublicInfoJson('tempFileName', encodeURI(filename));
 
   io.emit('update', '');
 };
