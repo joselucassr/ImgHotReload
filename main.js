@@ -12,7 +12,7 @@ const expServer = express();
 
 // IO e caminhos
 const path = require('path');
-var fs = require('fs');
+let fs = require('fs');
 
 // Relacionado a: Socket.IO
 const http = require('http');
@@ -47,6 +47,9 @@ function createWindow(socketIOPort) {
 app.whenReady().then(async () => {
   const [nodePort, socketIOPort] = await findFreePorts(2);
 
+  serveFiles();
+  updatePublicInfoJson('socketIOPort', socketIOPort);
+
   console.log('nodePort', nodePort);
   console.log('socketIOPort', socketIOPort);
 
@@ -65,6 +68,7 @@ app.whenReady().then(async () => {
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') {
     deleteTempFolderFiles();
+    updatePublicInfoJson('socketIOPort', '');
 
     app.quit();
   }
@@ -127,7 +131,7 @@ const handleMonitorFile = (event, selectedFilePath) => {
 const copyAndUpdatePublicImage = (selectedFilePath) => {
   deleteTempFolderFiles();
 
-  var dir = path.join(__dirname, 'public');
+  let dir = path.join(__dirname, 'public');
   let publicTempFolder = path.join(dir, 'temp');
 
   let filename =
@@ -140,20 +144,17 @@ const copyAndUpdatePublicImage = (selectedFilePath) => {
     console.log('image was copied to temp folder.');
   });
 
-  let fileInfo = {
-    tempFileName: filename,
-  };
-
-  let data = JSON.stringify(fileInfo, null, 2);
-  fs.writeFileSync(path.join(publicTempFolder, 'filesInfo.json'), data);
+  updatePublicInfoJson('tempFileName', filename);
 
   io.emit('update', '');
 };
 
 const deleteTempFolderFiles = () => {
   // Código copiado de: https://stackoverflow.com/questions/27072866/how-to-remove-all-files-from-directory-without-removing-directory-in-node-js
-  var dir = path.join(__dirname, 'public');
+  let dir = path.join(__dirname, 'public');
   let publicTempFolder = path.join(dir, 'temp');
+
+  updatePublicInfoJson('tempFileName', '');
 
   fs.readdir(publicTempFolder, (err, files) => {
     if (err) throw err;
@@ -165,4 +166,48 @@ const deleteTempFolderFiles = () => {
         });
     }
   });
+};
+
+const serveFiles = () => {
+  let mime = {
+    html: 'text/html',
+    txt: 'text/plain',
+    css: 'text/css',
+    gif: 'image/gif',
+    jpg: 'image/jpeg',
+    png: 'image/png',
+    svg: 'image/svg+xml',
+    js: 'application/javascript',
+  };
+
+  expServer.get('*', function (req, res) {
+    let dir = path.join(__dirname, 'public');
+
+    res.set('Cache-control', 'no-store');
+    let file = path.join(dir, req.path.replace(/\/$/, `/browserIndex.html`));
+    if (file.indexOf(dir + path.sep) !== 0) {
+      return res.status(403).end('Forbidden');
+    }
+    let type = mime[path.extname(file).slice(1)] || 'text/plain';
+    let s = fs.createReadStream(file);
+    s.on('open', function () {
+      res.set('Content-Type', type);
+      s.pipe(res);
+    });
+    s.on('error', function () {
+      res.set('Content-Type', 'text/plain');
+      res.status(404).end('Not found');
+    });
+  });
+};
+
+const updatePublicInfoJson = (field, value) => {
+  let dir = path.join(__dirname, 'public');
+  let rawdata = fs.readFileSync(path.join(dir, 'publicInfo.json'));
+  let publicInfo = JSON.parse(rawdata);
+
+  publicInfo[field] = value;
+
+  let data = JSON.stringify(publicInfo, null, 2);
+  fs.writeFileSync(path.join(dir, 'publicInfo.json'), data);
 };
