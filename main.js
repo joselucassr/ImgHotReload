@@ -57,6 +57,7 @@ app.whenReady().then(async () => {
   io.listen(socketIOPort);
 
   ipcMain.handle('dialog:openDirectory', handleDirectoryOpen);
+  ipcMain.handle('request:monitorFile', handleMonitorFile);
   createWindow(socketIOPort);
 
   app.on('activate', function () {
@@ -64,12 +65,12 @@ app.whenReady().then(async () => {
   });
 });
 
-app.on('window-all-closed', function () {
+app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
 // Devolve os arquivos dentro da pasta
-async function handleDirectoryOpen() {
+const handleDirectoryOpen = async () => {
   const { canceled, filePaths } = await dialog.showOpenDialog({
     properties: ['openDirectory'],
   });
@@ -88,7 +89,7 @@ async function handleDirectoryOpen() {
 
     return filteredTree;
   }
-}
+};
 
 // Código pego em: https://gist.github.com/g45t345rt/22a356fdba70a04932db2c37a0f9691a
 const removeEmptyFolder = (obj, parent) => {
@@ -105,4 +106,8 @@ const removeEmptyFolder = (obj, parent) => {
       parent.children.splice(index, 1);
     }
   }
+};
+
+const handleMonitorFile = (event, selectedFilePath) => {
+  console.log('selectedFilePath', selectedFilePath);
 };

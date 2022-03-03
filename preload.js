@@ -25,4 +25,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getLocalIP: localIP,
   getSocketIOPort: (callback) => ipcRenderer.on('socketIOPort', callback),
   openDirectory: () => ipcRenderer.invoke('dialog:openDirectory'),
+  monitorFile: (path) => ipcRenderer.invoke('request:monitorFile', path),
 });

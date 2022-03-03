@@ -28,7 +28,9 @@ const buildList = (children) => {
   });
 };
 
-const monitorFile = () => {};
+const monitorFile = (path) => {
+  window.electronAPI.monitorFile(path);
+};
 
 const appendItens = (parent, current) => {
   let div = document.createElement('div');
