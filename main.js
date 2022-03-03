@@ -27,7 +27,7 @@ const chokidar = require('chokidar');
 const watcher = chokidar.watch();
 
 // Criando janela;
-function createWindow() {
+function createWindow(socketIOPort) {
   const mainWindow = new BrowserWindow({
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -35,6 +35,10 @@ function createWindow() {
   });
 
   mainWindow.loadFile('index.html');
+
+  mainWindow.webContents.on('did-finish-load', () => {
+    mainWindow.webContents.send('socketIOPort', socketIOPort);
+  });
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
@@ -49,7 +53,7 @@ app.whenReady().then(async () => {
   expServer.listen(nodePort);
   io.listen(socketIOPort);
 
-  createWindow();
+  createWindow(socketIOPort);
 
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
