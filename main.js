@@ -86,7 +86,7 @@ const handleDirectoryOpen = async () => {
     console.log(filePaths);
 
     const filteredTree = dirTree(filePaths[0], {
-      extensions: /\.(jpg|jpeg|png|gif)$/,
+      extensions: /\.(jpg|jpeg|png|gif|svg)$/,
       attributes: ['type'],
     });
 
