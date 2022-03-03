@@ -128,11 +128,11 @@ const copyAndUpdatePublicImage = (selectedFilePath) => {
   deleteTempFolderFiles();
 
   var dir = path.join(__dirname, 'public');
+  let publicTempFolder = path.join(dir, 'temp');
 
   let filename =
     selectedFilePath.split('/')[selectedFilePath.split('/').length - 1];
 
-  let publicTempFolder = path.join(dir, 'temp');
   let publicImgPath = path.join(publicTempFolder, filename);
 
   fs.copyFile(selectedFilePath, publicImgPath, (err) => {
@@ -159,9 +159,10 @@ const deleteTempFolderFiles = () => {
     if (err) throw err;
 
     for (const file of files) {
-      fs.unlink(path.join(publicTempFolder, file), (err) => {
-        if (err) throw err;
-      });
+      if (file !== '.gitignore')
+        fs.unlink(path.join(publicTempFolder, file), (err) => {
+          if (err) throw err;
+        });
     }
   });
 };
