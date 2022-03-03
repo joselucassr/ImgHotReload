@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <style>
+      body {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <img src="" style="max-height: 100vh" alt="" />
+
+    <script
+      src="https://cdn.socket.io/4.4.1/socket.io.min.js"
+      integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwHPhBo/H"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      fetch('/publicInfo.json')
+        .then((res) => res.json())
+        .then((data) => {
+          // console.log(window.location.hostname);
+          let imgObj = document.querySelector('img');
+
+          console.log(data);
+          imgObj.src = 'temp/' + data.tempFileName + '#' + new Date().getTime();
+
+          var socket = io(window.location.hostname + ':' + data.socketIOPort);
+          socket.on('update', () => {
+            console.log('Updating');
+            loadImage();
+          });
+        });
+
+      const loadImage = () => {
+        let imgObj = document.querySelector('img');
+
+        fetch('/publicInfo.json')
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+            imgObj.src =
+              'temp/' + data.tempFileName + '#' + new Date().getTime();
+          });
+
+        console.log(imgObj);
+      };
+    </script>
+  </body>
+</html>
