@@ -81,6 +81,7 @@ async function handleDirectoryOpen() {
 
     const filteredTree = dirTree(filePaths[0], {
       extensions: /\.(jpg|jpeg|png|gif)$/,
+      attributes: ['type'],
     });
 
     removeEmptyFolder(filteredTree);

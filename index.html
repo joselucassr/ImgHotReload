@@ -4,16 +4,111 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
+    <!-- <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self'"
-    />
+    /> -->
     <title>Image Hot Reload</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+      html {
+        font-family: 'Ubuntu Mono', monospace;
+        background-color: #edf2f4;
+        color: #2b2d42;
+      }
+
+      .margin {
+        margin: 15px;
+        color: #8d99ae;
+        border-left: 2px solid #8d99ae;
+        padding-left: 5px;
+      }
+
+      .file {
+        color: #d90429;
+        cursor: pointer;
+      }
+
+      .monitoredFile {
+        color: #088026;
+        font-weight: 700;
+      }
+
+      .container {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: space-between;
+        padding: 50px;
+      }
+
+      .info {
+        flex-basis: 60%;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .directory {
+        flex-basis: 30%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      #canvas {
+        text-align: center;
+      }
+
+      h2 {
+        text-align: center;
+        color: #8d99ae;
+      }
+
+      .fileBeingMonitoredInfo {
+        font-size: 2rem;
+      }
+
+      .fileTreeInfo {
+        font-size: 1.5rem;
+      }
+
+      #btn {
+        font-size: inherit;
+        font-family: inherit;
+      }
+
+      .qrCodeGroup {
+        text-align: center;
+        max-width: 40%;
+      }
+    </style>
   </head>
   <body>
-    <button type="button" id="btn">Open a directory</button>
-    Directory path: <strong id="directoryPath"></strong>
+    <div class="container">
+      <div class="info">
+        <div class="fileBeingMonitoredInfo">
+          Arquivo sendo monitorado: <span id="monitoredFileInfo">nenhum</span>
+        </div>
+        <div class="qrCodeGroup">
+          <div id="canvas"></div>
+          <h2>
+            Escaneie o código acima para visualizar o arquivo monitorado no
+            celular.
+          </h2>
+        </div>
+      </div>
+      <div class="directory">
+        <div class="fileTreeInfo">
+          <button id="btn">Abrir diretório</button>
+          <div>Diretório aberto: <span id="directoryPath">nenhum</span></div>
+        </div>
+        <div id="fileTree"></div>
+      </div>
+    </div>
 
+    <script
+      type="text/javascript"
+      src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"
+    ></script>
     <script src="./renderer.js"></script>
   </body>
 </html>
