@@ -1,0 +1,20 @@
+{
+  "name": "img-hot-reload",
+  "version": "1.0.0",
+  "description": "Um app para visualização rápida de arquivos de imagem do computador no celular.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "joselucassr",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^17.1.0"
+  },
+  "dependencies": {
+    "chokidar": "^3.5.3",
+    "express": "^4.17.3",
+    "find-free-ports": "^3.0.0",
+    "socket.io": "^4.4.1"
+  }
+}
