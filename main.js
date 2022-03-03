@@ -53,6 +53,7 @@ app.whenReady().then(async () => {
   expServer.listen(nodePort);
   io.listen(socketIOPort);
 
+  ipcMain.handle('dialog:openDirectory', handleDirectoryOpen);
   createWindow(socketIOPort);
 
   app.on('activate', function () {
@@ -63,3 +64,17 @@ app.whenReady().then(async () => {
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit();
 });
+
+// Devolve os arquivos dentro da pasta
+async function handleDirectoryOpen() {
+  const { canceled, filePaths } = await dialog.showOpenDialog({
+    properties: ['openDirectory'],
+  });
+
+  if (canceled) {
+    return;
+  } else {
+    console.log(filePaths);
+    return filePaths[0];
+  }
+}

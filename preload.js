@@ -24,4 +24,5 @@ const localIP = results[Object.keys(results)[0]][0];
 contextBridge.exposeInMainWorld('electronAPI', {
   getLocalIP: localIP,
   getSocketIOPort: (callback) => ipcRenderer.on('socketIOPort', callback),
+  openDirectory: () => ipcRenderer.invoke('dialog:openDirectory'),
 });
