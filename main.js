@@ -42,9 +42,6 @@ function createWindow(socketIOPort) {
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.webContents.send('socketIOPort', socketIOPort);
   });
-
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
 }
 
 app.whenReady().then(async () => {
@@ -63,6 +60,14 @@ app.whenReady().then(async () => {
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
+});
+
+app.on('window-all-closed', function () {
+  if (process.platform !== 'darwin') {
+    deleteTempFolderFiles();
+
+    app.quit();
+  }
 });
 
 app.on('window-all-closed', () => {
@@ -110,4 +115,53 @@ const removeEmptyFolder = (obj, parent) => {
 
 const handleMonitorFile = (event, selectedFilePath) => {
   console.log('selectedFilePath', selectedFilePath);
+
+  copyAndUpdatePublicImage(selectedFilePath);
+
+  watcher.add(selectedFilePath);
+  watcher.on('change', (event, thisPath) => {
+    copyAndUpdatePublicImage(selectedFilePath);
+  });
+};
+
+const copyAndUpdatePublicImage = (selectedFilePath) => {
+  deleteTempFolderFiles();
+
+  var dir = path.join(__dirname, 'public');
+
+  let filename =
+    selectedFilePath.split('/')[selectedFilePath.split('/').length - 1];
+
+  let publicTempFolder = path.join(dir, 'temp');
+  let publicImgPath = path.join(publicTempFolder, filename);
+
+  fs.copyFile(selectedFilePath, publicImgPath, (err) => {
+    if (err) throw err;
+    console.log('image was copied to temp folder.');
+  });
+
+  let fileInfo = {
+    tempFileName: filename,
+  };
+
+  let data = JSON.stringify(fileInfo, null, 2);
+  fs.writeFileSync(path.join(publicTempFolder, 'filesInfo.json'), data);
+
+  io.emit('update', '');
+};
+
+const deleteTempFolderFiles = () => {
+  // Código copiado de: https://stackoverflow.com/questions/27072866/how-to-remove-all-files-from-directory-without-removing-directory-in-node-js
+  var dir = path.join(__dirname, 'public');
+  let publicTempFolder = path.join(dir, 'temp');
+
+  fs.readdir(publicTempFolder, (err, files) => {
+    if (err) throw err;
+
+    for (const file of files) {
+      fs.unlink(path.join(publicTempFolder, file), (err) => {
+        if (err) throw err;
+      });
+    }
+  });
 };
