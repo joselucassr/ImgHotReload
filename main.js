@@ -30,7 +30,7 @@ const chokidar = require('chokidar');
 const watcher = chokidar.watch();
 
 // Criando janela;
-function createWindow(socketIOPort) {
+function createWindow(expressPort) {
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
@@ -42,7 +42,6 @@ function createWindow(socketIOPort) {
   mainWindow.loadFile('index.html');
 
   mainWindow.webContents.on('did-finish-load', () => {
-    mainWindow.webContents.send('socketIOPort', socketIOPort);
     mainWindow.webContents.send('expressPort', expressPort);
   });
 }
@@ -61,7 +60,7 @@ app.whenReady().then(async () => {
 
   ipcMain.handle('dialog:openDirectory', handleDirectoryOpen);
   ipcMain.handle('request:monitorFile', handleMonitorFile);
-  createWindow(socketIOPort);
+  createWindow(expressPort);
 
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
