@@ -15,6 +15,7 @@ let didInit = false;
 
 laterBtn.addEventListener('click', async () => {
   await getDir();
+  changeViewState('newDirectory');
 });
 
 initialBtn.addEventListener('click', async () => {
@@ -111,6 +112,10 @@ const changeViewState = (from) => {
       directoryPathElement.parentElement.classList.remove('hidden');
       fileTreeElement.classList.remove('hidden');
       laterBtn.classList.remove('hidden');
+      break;
+    case 'newDirectory':
+      fileBeingMonitoredInfoElement.innerText =
+        'Abra um diretório e clique em um arquivo primeiro.';
       break;
   }
 };
