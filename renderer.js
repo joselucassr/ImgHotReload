@@ -28,12 +28,13 @@ const getDir = async () => {
   directoryPathElement.innerText = pathFileTree.name;
 };
 
-window.electronAPI.getSocketIOPort((event, port) => {
-  console.log(window.electronAPI.getLocalIP);
-  console.log('port', port);
+window.electronAPI.expressPort((event, port) => {
+  // console.log(window.electronAPI.getLocalIP);
+  // console.log('port', port);
 
   if (!didInit) {
     createQRCode(window.electronAPI.getLocalIP, port);
+    urlElement.innerHTML = `${window.electronAPI.getLocalIP}:${port}`;
     didInit = true;
   }
 });
