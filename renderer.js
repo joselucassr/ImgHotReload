@@ -28,7 +28,7 @@ const getDir = async () => {
   directoryPathElement.innerText = pathFileTree.name;
 };
 
-window.electronAPI.expressPort((event, port) => {
+window.electronAPI.getExpressPort((event, port) => {
   // console.log(window.electronAPI.getLocalIP);
   // console.log('port', port);
 
