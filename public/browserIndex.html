@@ -3,13 +3,41 @@
   <head>
     <title>Socket.IO chat</title>
     <style>
+      @import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+      html {
+        font-family: 'Ubuntu Mono', monospace;
+        text-align: center;
+        height: 100%;
+      }
+
       body {
         margin: 0;
+        height: 100%;
+        display: flex;
+      }
+
+      img {
+        margin: auto;
+        min-width: 100vw;
+      }
+
+      #noticeText {
+        font-size: 2rem;
+        margin: auto;
+      }
+
+      .hidden {
+        display: none;
       }
     </style>
   </head>
   <body>
-    <img src="" style="max-height: 100vh; max-width: 100vw" alt="" />
+    <img src="" alt="" />
+
+    <div id="noticeText" class="">
+      Nenhum arquivo encontrado, selecione um na lista do diretório.
+    </div>
 
     <script
       src="https://cdn.socket.io/4.4.1/socket.io.min.js"
@@ -23,6 +51,11 @@
           // console.log(window.location.hostname);
           let imgObj = document.querySelector('img');
 
+          if (data.tempFileName?.length > 0) {
+            let noticeText = document.getElementById('noticeText');
+            noticeText.classList?.add('hidden');
+          }
+
           console.log(data);
           imgObj.src = 'temp/' + data.tempFileName + '#' + new Date().getTime();
 
@@ -34,6 +67,9 @@
         });
 
       const loadImage = () => {
+        let noticeText = document.getElementById('noticeText');
+        noticeText.classList?.add('hidden');
+
         let imgObj = document.querySelector('img');
 
         fetch('/publicInfo.json')
