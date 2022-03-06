@@ -47,6 +47,7 @@ function createWindow(expressPort) {
   });
 }
 
+if (require('electron-squirrel-startup')) return;
 app.whenReady().then(async () => {
   const [expressPort, socketIOPort] = await findFreePorts(2);
 
