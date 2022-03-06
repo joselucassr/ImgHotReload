@@ -6,7 +6,9 @@
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
-    "make": "electron-forge make"
+    "make": "electron-forge make",
+    "make-mac": "electron-forge make --platform darwin",
+    "make-linux": "electron-forge make --platform linux --targets @electron-forge/maker-deb"
   },
   "author": "joselucassr",
   "license": "MIT",
@@ -28,7 +30,9 @@
   },
   "config": {
     "forge": {
-      "packagerConfig": {},
+      "packagerConfig": {
+        "icon": "./assets/Logo"
+      },
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",
@@ -44,7 +48,9 @@
         },
         {
           "name": "@electron-forge/maker-deb",
-          "config": {}
+          "config": {
+            "icon": "./assets/Logo.png"
+          }
         },
         {
           "name": "@electron-forge/maker-rpm",
