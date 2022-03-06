@@ -119,11 +119,12 @@ const removeEmptyFolder = (obj, parent) => {
   }
 };
 
-const handleMonitorFile = (event, selectedFilePath) => {
+const handleMonitorFile = async (event, selectedFilePath) => {
   console.log('selectedFilePath', selectedFilePath);
 
   copyAndUpdatePublicImage(selectedFilePath);
 
+  await watcher.close();
   watcher.add(selectedFilePath);
   watcher.on('change', (event, thisPath) => {
     copyAndUpdatePublicImage(selectedFilePath);
