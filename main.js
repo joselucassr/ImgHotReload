@@ -32,6 +32,8 @@ const watcher = chokidar.watch();
 // Criando janela;
 function createWindow(socketIOPort) {
   const mainWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
@@ -41,19 +43,20 @@ function createWindow(socketIOPort) {
 
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.webContents.send('socketIOPort', socketIOPort);
+    mainWindow.webContents.send('expressPort', expressPort);
   });
 }
 
 app.whenReady().then(async () => {
-  const [nodePort, socketIOPort] = await findFreePorts(2);
+  const [expressPort, socketIOPort] = await findFreePorts(2);
 
   serveFiles();
   updatePublicInfoJson('socketIOPort', socketIOPort);
 
-  console.log('nodePort', nodePort);
+  console.log('nodePort', expressPort);
   console.log('socketIOPort', socketIOPort);
 
-  expServer.listen(nodePort);
+  expServer.listen(expressPort);
   io.listen(socketIOPort);
 
   ipcMain.handle('dialog:openDirectory', handleDirectoryOpen);

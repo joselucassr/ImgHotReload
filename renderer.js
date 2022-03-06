@@ -1,30 +1,48 @@
-const btn = document.getElementById('btn');
+const initialBtn = document.getElementById('initialBtn');
+const laterBtn = document.getElementById('laterBtn');
+
+const urlElement = document.getElementById('url');
+
 const directoryPathElement = document.getElementById('directoryPath');
+
+let fileTreeElement = document.getElementById('fileTree');
+
 const fileBeingMonitoredInfoElement =
   document.getElementById('monitoredFileInfo');
-
 let previousMonitoredFileTreeElement = null;
 
-btn.addEventListener('click', async () => {
+let didInit = false;
+
+laterBtn.addEventListener('click', async () => {
+  await getDir();
+});
+
+initialBtn.addEventListener('click', async () => {
+  await getDir();
+  changeViewState('fromInitial');
+});
+
+const getDir = async () => {
   const pathFileTree = await window.electronAPI.openDirectory();
-  console.log(pathFileTree);
   buildList(pathFileTree.children);
   directoryPathElement.innerText = pathFileTree.name;
-});
+};
 
 window.electronAPI.getSocketIOPort((event, port) => {
   console.log(window.electronAPI.getLocalIP);
   console.log('port', port);
 
-  createQRCode(window.electronAPI.getLocalIP, port);
+  if (!didInit) {
+    createQRCode(window.electronAPI.getLocalIP, port);
+    didInit = true;
+  }
 });
 
 const buildList = (children) => {
-  let containerElement = document.getElementById('fileTree');
-  containerElement.innerHTML = '';
+  fileTreeElement.innerHTML = '';
 
   children.forEach((element) => {
-    appendItens(containerElement, element);
+    appendItens(fileTreeElement, element);
   });
 };
 
@@ -38,19 +56,7 @@ const appendItens = (parent, current) => {
   if (current.type === 'file') {
     div.setAttribute('path', current.path);
     div.classList.add('file');
-    div.addEventListener('click', () => {
-      console.log(div.getAttribute('path'));
-      fileBeingMonitoredInfoElement.innerText = current.name;
-
-      if (previousMonitoredFileTreeElement !== null) {
-        previousMonitoredFileTreeElement.classList.contains('monitoredFile') &&
-          previousMonitoredFileTreeElement.classList.remove('monitoredFile');
-      }
-      previousMonitoredFileTreeElement = div;
-      div.classList.add('monitoredFile');
-
-      monitorFile(current.path);
-    });
+    div.addEventListener('click', () => changeSelectedFile(div, current));
   }
   div.append(current.name);
   parent.append(div);
@@ -63,16 +69,16 @@ const appendItens = (parent, current) => {
 
 const createQRCode = (ip, port) => {
   const qrCode = new QRCodeStyling({
-    width: 250,
-    height: 250,
-    type: 'svg',
+    width: 150,
+    height: 150,
+    type: 'canvas',
     data: `${ip}:${port}`,
     dotsOptions: {
-      color: '#d90429',
+      color: '#F22555',
       type: 'square',
     },
     backgroundOptions: {
-      color: '#edf2f4',
+      color: '#fff',
     },
     imageOptions: {
       crossOrigin: 'anonymous',
@@ -81,4 +87,29 @@ const createQRCode = (ip, port) => {
   });
 
   qrCode.append(document.getElementById('canvas'));
+};
+
+const changeSelectedFile = (div, current) => {
+  console.log(div.getAttribute('path'));
+  fileBeingMonitoredInfoElement.innerText = current.name;
+
+  if (previousMonitoredFileTreeElement !== null) {
+    previousMonitoredFileTreeElement.classList.contains('monitoredFile') &&
+      previousMonitoredFileTreeElement.classList.remove('monitoredFile');
+  }
+  previousMonitoredFileTreeElement = div;
+  div.classList.add('monitoredFile');
+
+  monitorFile(current.path);
+};
+
+const changeViewState = (from) => {
+  switch (from) {
+    case 'fromInitial':
+      initialBtn.classList.add('hidden');
+      directoryPathElement.parentElement.classList.remove('hidden');
+      fileTreeElement.classList.remove('hidden');
+      laterBtn.classList.remove('hidden');
+      break;
+  }
 };
